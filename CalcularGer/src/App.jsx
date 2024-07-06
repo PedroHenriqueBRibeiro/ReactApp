@@ -1,0 +1,254 @@
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import "./App.css";
+import { Container, Row, Col, Button, Tooltip, OverlayTrigger, Spinner, Placeholder } from 'react-bootstrap';
+import GlobalContainer from "./components/ContainerGlobal";
+import { handleSubmit } from "./services/api";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FaRegQuestionCircle } from "react-icons/fa";
+
+const App = () => {
+  const [overs, setOvers] = useState(Array(11).fill(''));
+  const [upgrades, setUpgrades] = useState(Array(11).fill(''));
+  const [reservesOvers, setReservesOvers] = useState([]);
+  const [reservesUpgrades, setReservesUpgrades] = useState([]);
+  const [ger, setGer] = useState(null);
+  const [gerReal, setGerReal] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const gerRef = useRef(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/retrieve');
+        console.log('API Response:', response.data);
+
+        if (response.data.overs.length > 0 && response.data.upgrades.length > 0) {
+          setOvers(response.data.overs.map(value => value === 0 ? '' : value));
+          setUpgrades(response.data.upgrades.map(value => value === 0 ? '' : value));
+          setReservesOvers(response.data.reserves_overs.map(value => value === 0 ? '' : value));
+          setReservesUpgrades(response.data.reserves_upgrades.map(value => value === 0 ? '' : value));
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+  fetchData();
+}, []);
+
+
+
+const handleInputChange = (index, type, value, reserve = false) => {
+
+  const parsedValue = parseInt(value, 10);
+
+  if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 5) {
+    if (reserve) {
+      const newValues = type === 'over' ? [...reservesOvers] : [...reservesUpgrades];
+      newValues[index] = parsedValue.toString(); 
+      type === 'over' ? setReservesOvers(newValues) : setReservesUpgrades(newValues);
+    } else {
+      const newValues = type === 'over' ? [...overs] : [...upgrades];
+      newValues[index] = parsedValue.toString();
+      type === 'over' ? setOvers(newValues) : setUpgrades(newValues);
+    }
+  } else {
+    console.log("");
+
+  }
+};
+
+
+  const handleAddReserve = () => {
+    if (reservesOvers.length < 7 && reservesUpgrades.length < 7) {
+      setReservesOvers(prevReservesOvers => [...prevReservesOvers, '']);
+      setReservesUpgrades(prevReservesUpgrades => [...prevReservesUpgrades, '']);
+    } else {
+      toast.warning("Max. Subs.", {
+        position: "top-center"
+      });
+    }
+  };
+
+  const handleDeleteReserve = (index) => {
+    const newReservesOvers = reservesOvers.filter((_, i) => i !== index);
+    const newReservesUpgrades = reservesUpgrades.filter((_, i) => i !== index);
+    setReservesOvers(newReservesOvers);
+    setReservesUpgrades(newReservesUpgrades);
+  };
+
+  const renderInputs = (type) => {
+    const values = type === 'over' ? overs : upgrades;
+
+    return (
+      <Container className="mb-3">
+        <Row className="justify-content-center mb-2">
+          {values.slice(0, 3).map((value, index) => (
+            <Col xs="auto" key={index}>
+              <input
+                type="number"
+                value={value}
+                onChange={(e) => handleInputChange(index, type, e.target.value)}
+                placeholder={`Player`}
+                className="input-sm"
+              />
+            </Col>
+          ))}
+        </Row>
+        <Row className="justify-content-center mb-2">
+          {values.slice(3, 6).map((value, index) => (
+            <Col xs="auto" key={index + 3}>
+              <input
+                type="number"
+                value={value}
+                onChange={(e) => handleInputChange(index + 3, type, e.target.value)}
+                placeholder={`Player`}
+                className="input-sm"
+              />
+            </Col>
+          ))}
+        </Row>
+        <Row className="justify-content-center mb-2">
+          {values.slice(6, 10).map((value, index) => (
+            <Col xs="auto" key={index + 6}>
+              <input
+                type="number"
+                value={value}
+                onChange={(e) => handleInputChange(index + 6, type, e.target.value)}
+                placeholder={`Player`}
+                className="input-sm"
+              />
+            </Col>
+          ))}
+        </Row>
+        <Row className="justify-content-center">
+          <Col xs="auto">
+            <input
+              type="number"
+              value={values[10]}
+              onChange={(e) => handleInputChange(10, type, e.target.value)}
+              placeholder="Player"
+              className="input-sm"
+            />
+          </Col>
+        </Row>
+      </Container>
+    );
+  };
+
+  const handleCalculate = async () => {
+    setLoading(true);
+    await handleSubmit(
+      overs.map(Number), 
+      upgrades.map(Number), 
+      reservesOvers.map(Number), 
+      reservesUpgrades.map(Number), 
+      setGer, 
+      setGerReal
+    );
+    setLoading(false);
+    if (gerRef.current) {
+      console.log(gerRef.current);
+    }
+  };
+  
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" className="custom-tooltip" {...props}>
+      <span className="tip-text">Fill in these fields with the base overalls of each player in your starting team. For example: if your player has 98 overall and 3 ranks up, he has a 95 base overall.</span>
+    </Tooltip>
+  );
+
+  const renderTooltip2 = (props) => (
+    <Tooltip id="button-tooltip2" className="custom-tooltip" {...props}>
+      <span className="tip-text">Fill in these fields with the number of upgraded ranks from 0 to 5. For example: if your player has 100 overall and is at the maximum rank, he has 95 base overall and 5 upgraded rank.</span>
+    </Tooltip>
+  );
+
+  return (
+    <GlobalContainer
+      overs={overs}
+      upgrades={upgrades}
+      reservesOvers={reservesOvers}
+      reservesUpgrades={reservesUpgrades}
+      setGer={setGer}
+      setGerReal={setGerReal}
+    >
+      <Container className="content-container">
+        <ToastContainer />
+        <div className="border rounded p-4 mb-4 content-container mb-1">
+          <h1 className="text-center mb-4">Team GER Calculator</h1>
+          <div className="border rounded p-4 mb-4 mb-2">
+            <h2 className="text-center padding-text">
+              Base Overalls
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 250, hide: 5000 }}
+                overlay={renderTooltip}
+              >
+                <span className="ml-2" style={{ cursor: 'pointer' }}>
+                  <FaRegQuestionCircle className="icon-question"/>
+                </span>
+              </OverlayTrigger>
+            </h2>
+            {renderInputs('over')}
+          </div>
+          <div className="border rounded p-4 mb-4 mb-2">
+            <h2 className="text-center padding-text">
+              Upgrades
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 250, hide: 5000 }}
+                overlay={renderTooltip2}
+              >
+                <span className="ml-2" style={{ cursor: 'pointer' }}>
+                  <FaRegQuestionCircle className="icon-question"/>
+                </span>
+              </OverlayTrigger>
+            </h2>
+            {renderInputs('upgrade')}
+          </div>
+          <div className="text-center">
+            <Button href="#reserva" id="reserva" onClick={handleAddReserve} className="button">Add Substitute</Button>
+            {reservesOvers.map((reserve, index) => (
+              <div key={index} className="mb-7 d-flex align-items-center justify-content-center">
+                <input
+                  type="number"
+                  value={reserve}
+                  onChange={(e) => handleInputChange(index, 'over', e.target.value, true)}
+                  placeholder={`Sub ${index + 1}`}
+                  className="input-sm"
+                  style={{ width: '120px', marginRight: '10px' }}
+                />
+                <input
+                  type="number"
+                  value={reservesUpgrades[index]}
+                  onChange={(e) => handleInputChange(index, 'upgrade', e.target.value, true)}
+                  placeholder={`Up ${index + 1}`}
+                  className="input-sm"
+                  style={{ width: '80px', marginRight: '10px' }}
+                />
+                <Button onClick={() => handleDeleteReserve(index)} className="btn-danger">X</Button>
+              </div>
+            ))}
+            <div className="text-center mb-4">
+              <Button className="button" onClick={handleCalculate}>
+                {loading ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : 'Calculate'}
+              </Button>
+            </div>
+            {ger !== null && (
+              <div className="text-center">
+                <h2 ref={gerRef}>GER: {ger}</h2>
+                <h2>Real GER: {gerReal !== null ? gerReal.toFixed(4) : ''}</h2>
+              </div>
+            )}
+          </div>
+        </div>
+      </Container>
+    </GlobalContainer>
+  );
+};
+
+export default App;
+

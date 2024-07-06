@@ -1,0 +1,75 @@
+.global-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 200vh;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, #000000, rgb(39, 121, 39), #000000);
+    padding-top: 120vh;
+    padding-bottom: 150vh;
+    
+  }
+  
+  .content-container {
+    background: linear-gradient(90deg, rgb(39, 121, 39));
+    border-color: aliceblue;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 180vw;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+     
+  }
+  
+  .footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 80px;
+    width: 100%;
+    background: linear-gradient(90deg, #000000, #434343);
+    color: white;
+    text-align: center;
+  }
+
+  .icon {
+    width: 34px;
+    height: 34px;
+    margin: 0.5rem;
+    vertical-align: middle;
+    color: white;
+  }
+
+.col-l {
+    float: left;
+}
+
+.col-r {
+  float: right;
+}
+
+.col-c {
+  float: none;
+}
+
+
+.logo{
+  margin: 20px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  color: white;
+}
+
+.logo:hover, .icon:hover {
+  color: orange;
+}
+
+.padding-text-2 {
+  padding-left: 9rem;
+}
