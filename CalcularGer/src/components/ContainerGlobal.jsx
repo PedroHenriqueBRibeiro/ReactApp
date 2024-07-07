@@ -4,11 +4,11 @@ import { FaGithub } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { IoIosFootball } from "react-icons/io";
 import { FaLinkedin } from "react-icons/fa";
-import { handleSubmit } from '../services/api';
-import { ToastContainer } from 'react-toastify';
+import handleCalculate from '../services/HandleCalculate';
 import 'react-toastify/dist/ReactToastify.css';
 
-const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal }) => {
+
+const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, toastId }) => {
   return (
     <div>
       <div className="global-container">
@@ -17,7 +17,7 @@ const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpg
       <div className='footer'>
         <div>
           <div className="col-l">
-            <a href='#reserva' onClick={() => handleSubmit(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal)}>
+            <a href='#calc' onClick={() => handleCalculate(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, toastId)}>
               <IoIosFootball className='logo'/>
             </a>
           </div>
@@ -37,7 +37,6 @@ const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpg
           </div>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 };
