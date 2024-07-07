@@ -3,6 +3,7 @@ import axios from "axios";
 import "./App.css";
 import { Container, Row, Col, Button, Tooltip, OverlayTrigger, Spinner, Placeholder } from 'react-bootstrap';
 import GlobalContainer from "./components/ContainerGlobal";
+import InputGrid from "./components/InputGrid"; 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaRegQuestionCircle } from "react-icons/fa";
@@ -40,7 +41,6 @@ const App = () => {
 
     fetchData();
   }, []);
-
 
   const validateInputs = (overs) => {
     let isValid = true;
@@ -85,8 +85,6 @@ const App = () => {
       }
     }
   };
-  
-
 
   const handleAddReserve = () => {
     if (reservesOvers.length < 7 && reservesUpgrades.length < 7) {
@@ -106,81 +104,18 @@ const App = () => {
     setReservesUpgrades(newReservesUpgrades);
   };
 
-  const renderInputs = (type) => {
-    const values = type === 'over' ? overs : upgrades;
-
-    return (
-      <Container className="mb-3">
-        <Row className="justify-content-center mb-2">
-          {values.slice(0, 3).map((value, index) => (
-            <Col xs="auto" key={index}>
-              <input
-                type="number"
-                value={value}
-                onChange={(e) => handleInputChange(index, type, e.target.value)}
-                placeholder={`Player`}
-                className={`input-sm ${type === 'over' ? (errors[index] ? 'is-invalid' : '') : ''}`}
-              />
-              {errors[index] && <div className="invalid-feedback">{errors[index]}</div>}
-            </Col>
-          ))}
-        </Row>
-        <Row className="justify-content-center mb-2">
-          {values.slice(3, 6).map((value, index) => (
-            <Col xs="auto" key={index + 3}>
-              <input
-                type="number"
-                value={value}
-                onChange={(e) => handleInputChange(index + 3, type, e.target.value)}
-                placeholder={`Player`}
-                className={`input-sm ${type === 'over' ? (errors[index + 3] ? 'is-invalid' : '') : ''}`}
-              />
-              {errors[index + 3] && <div className="invalid-feedback">{errors[index + 3]}</div>}
-            </Col>
-          ))}
-        </Row>
-        <Row className="justify-content-center mb-2">
-          {values.slice(6, 10).map((value, index) => (
-            <Col xs="auto" key={index + 6}>
-              <input
-                type="number"
-                value={value}
-                onChange={(e) => handleInputChange(index + 6, type, e.target.value)}
-                placeholder={`Player`}
-                className={`input-sm ${type === 'over' ? (errors[index + 6] ? 'is-invalid' : '') : ''}`}
-              />
-              {errors[index + 6] && <div className="invalid-feedback">{errors[index + 6]}</div>}
-            </Col>
-          ))}
-        </Row>
-        <Row className="justify-content-center">
-          <Col xs="auto">
-            <input
-              type="number"
-              value={values[10]}
-              onChange={(e) => handleInputChange(10, type, e.target.value)}
-              placeholder="Player"
-              className={`input-sm ${type === 'over' ? (errors[10] ? 'is-invalid' : '') : ''}`}
-            />
-            {errors[10] && <div className="invalid-feedback">{errors[10]}</div>}
-          </Col>
-        </Row>
-      </Container>
-    );
-  };
-
   return (
     <GlobalContainer
-    overs={overs}
-    upgrades={upgrades}
-    reservesOvers={reservesOvers}
-    reservesUpgrades={reservesUpgrades}
-    setGer={setGer}
-    setGerReal={setGerReal}
-    setLoading={setLoading}
-    setErrors={setErrors}
-    setReserveErrors={setReserveErrors}
-    toastId={toastId.current}
+      overs={overs}
+      upgrades={upgrades}
+      reservesOvers={reservesOvers}
+      reservesUpgrades={reservesUpgrades}
+      setGer={setGer}
+      setGerReal={setGerReal}
+      setLoading={setLoading}
+      setErrors={setErrors}
+      setReserveErrors={setReserveErrors}
+      toastId={toastId.current}
     >
       <Container className="content-container">
         <ToastContainer />
@@ -203,7 +138,12 @@ const App = () => {
                 </span>
               </OverlayTrigger>
             </h2>
-            {renderInputs('over')}
+            <InputGrid 
+              type="over"
+              values={overs}
+              handleInputChange={handleInputChange}
+              errors={errors}
+            />
           </div>
           <div className="border rounded p-4 mb-4 mb-2">
             <h2 className="text-center padding-text">
@@ -222,7 +162,12 @@ const App = () => {
                 </span>
               </OverlayTrigger>
             </h2>
-            {renderInputs('upgrade')}
+            <InputGrid 
+              type="upgrade"
+              values={upgrades}
+              handleInputChange={handleInputChange}
+              errors={errors}
+            />
           </div>
           <div className="text-center">
             <Button href="#calc" id="calc" onClick={handleAddReserve} className="button">Add Substitute</Button>
