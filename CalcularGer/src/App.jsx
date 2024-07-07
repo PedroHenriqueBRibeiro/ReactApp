@@ -17,6 +17,8 @@ const App = () => {
   const [gerReal, setGerReal] = useState(null);
   const [loading, setLoading] = useState(false);
   const gerRef = useRef(null);
+  const [errors, setErrors] = useState(Array(11).fill(''));
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,25 +42,36 @@ const App = () => {
 
 
 
+
+
 const handleInputChange = (index, type, value, reserve = false) => {
-
-  const parsedValue = parseInt(value, 10);
-
-  if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 5) {
+  if (type === 'upgrade' && /^[0-5]?$/.test(value)) {
     if (reserve) {
-      const newValues = type === 'over' ? [...reservesOvers] : [...reservesUpgrades];
-      newValues[index] = parsedValue.toString(); 
-      type === 'over' ? setReservesOvers(newValues) : setReservesUpgrades(newValues);
+      const newValues = [...reservesUpgrades];
+      newValues[index] = value;
+      setReservesUpgrades(newValues);
     } else {
-      const newValues = type === 'over' ? [...overs] : [...upgrades];
-      newValues[index] = parsedValue.toString();
-      type === 'over' ? setOvers(newValues) : setUpgrades(newValues);
+      const newValues = [...upgrades];
+      newValues[index] = value;
+      setUpgrades(newValues);
     }
-  } else {
-    console.log("");
-
+  } else if (type === 'over') {
+    if (reserve) {
+      const newValues = [...reservesOvers];
+      newValues[index] = value;
+      setReservesOvers(newValues);
+    } else {
+      const newValues = [...overs];
+      newValues[index] = value;
+      setOvers(newValues);
+    }
   }
 };
+
+
+
+
+
 
 
   const handleAddReserve = () => {
@@ -71,6 +84,23 @@ const handleInputChange = (index, type, value, reserve = false) => {
       });
     }
   };
+
+
+  const validateInputs = () => {
+    let isValid = true;
+    const newErrors = Array(11).fill('');
+  
+    overs.forEach((value, index) => {
+      if (value !== '' && (Number(value) < 40 || Number(value) > 150)) {
+        newErrors[index] = 'min 40 max. 150 overall';
+        isValid = false;
+      }
+    });
+  
+    setErrors(newErrors);
+    return isValid;
+  };
+  
 
   const handleDeleteReserve = (index) => {
     const newReservesOvers = reservesOvers.filter((_, i) => i !== index);
@@ -92,8 +122,9 @@ const handleInputChange = (index, type, value, reserve = false) => {
                 value={value}
                 onChange={(e) => handleInputChange(index, type, e.target.value)}
                 placeholder={`Player`}
-                className="input-sm"
+                className={`input-sm ${type === 'over' ? (errors[index] ? 'is-invalid' : '') : ''}`}
               />
+              {errors[index] && <div className="invalid-feedback">{errors[index]}</div>}
             </Col>
           ))}
         </Row>
@@ -105,8 +136,9 @@ const handleInputChange = (index, type, value, reserve = false) => {
                 value={value}
                 onChange={(e) => handleInputChange(index + 3, type, e.target.value)}
                 placeholder={`Player`}
-                className="input-sm"
+                className={`input-sm ${type === 'over' ? (errors[index + 3] ? 'is-invalid' : '') : ''}`}
               />
+              {errors[index + 3] && <div className="invalid-feedback">{errors[index + 3]}</div>}
             </Col>
           ))}
         </Row>
@@ -118,8 +150,9 @@ const handleInputChange = (index, type, value, reserve = false) => {
                 value={value}
                 onChange={(e) => handleInputChange(index + 6, type, e.target.value)}
                 placeholder={`Player`}
-                className="input-sm"
+                className={`input-sm ${type === 'over' ? (errors[index + 6] ? 'is-invalid' : '') : ''}`}
               />
+              {errors[index + 6] && <div className="invalid-feedback">{errors[index + 6]}</div>}
             </Col>
           ))}
         </Row>
@@ -130,8 +163,9 @@ const handleInputChange = (index, type, value, reserve = false) => {
               value={values[10]}
               onChange={(e) => handleInputChange(10, type, e.target.value)}
               placeholder="Player"
-              className="input-sm"
+              className={`input-sm ${type === 'over' ? (errors[10] ? 'is-invalid' : '') : ''}`}
             />
+            {errors[10] && <div className="invalid-feedback">{errors[10]}</div>}
           </Col>
         </Row>
       </Container>
@@ -139,20 +173,24 @@ const handleInputChange = (index, type, value, reserve = false) => {
   };
 
   const handleCalculate = async () => {
-    setLoading(true);
-    await handleSubmit(
-      overs.map(Number), 
-      upgrades.map(Number), 
-      reservesOvers.map(Number), 
-      reservesUpgrades.map(Number), 
-      setGer, 
-      setGerReal
-    );
-    setLoading(false);
-    if (gerRef.current) {
-      console.log(gerRef.current);
+    if (validateInputs()) {
+      setLoading(true);
+      await handleSubmit(
+        overs.map(Number), 
+        upgrades.map(Number), 
+        reservesOvers.map(Number), 
+        reservesUpgrades.map(Number), 
+        setGer, 
+        setGerReal
+      );
+      setLoading(false);
+    } else {
+      toast.warning("Fill in the fields correctly.", {
+        position: "top-center"
+      });
     }
   };
+
   
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" className="custom-tooltip" {...props}>
@@ -221,6 +259,9 @@ const handleInputChange = (index, type, value, reserve = false) => {
                   className="input-sm"
                   style={{ width: '120px', marginRight: '10px' }}
                 />
+                 {errors[index] && <div className="invalid-feedback">{errors[index]}</div>}
+
+
                 <input
                   type="number"
                   value={reservesUpgrades[index]}
@@ -229,6 +270,7 @@ const handleInputChange = (index, type, value, reserve = false) => {
                   className="input-sm"
                   style={{ width: '80px', marginRight: '10px' }}
                 />
+                
                 <Button onClick={() => handleDeleteReserve(index)} className="btn-danger">X</Button>
               </div>
             ))}
@@ -251,4 +293,3 @@ const handleInputChange = (index, type, value, reserve = false) => {
 };
 
 export default App;
-
