@@ -19,6 +19,7 @@ const App = () => {
   const gerRef = useRef(null);
   const toastId = useRef(null);
   const [errors, setErrors] = useState(Array(11).fill(false));
+  const [reserveErrors, setReserveErrors] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +41,21 @@ const App = () => {
     fetchData();
   }, []);
 
+
+  const validateInputs = (overs) => {
+    let isValid = true;
+    const newErrors = Array(overs.length).fill(false);
+  
+    overs.forEach((value, index) => {
+      if (value !== '' && (Number(value) < 40 || Number(value) > 150)) {
+        newErrors[index] = true;
+        isValid = false;
+      }
+    });
+  
+    return { isValid, newErrors };
+  };
+
   const handleInputChange = (index, type, value, reserve = false) => {
     if (type === 'upgrade' && /^[0-5]?$/.test(value)) {
       if (reserve) {
@@ -52,17 +68,25 @@ const App = () => {
         setUpgrades(newValues);
       }
     } else if (type === 'over') {
-      if (reserve) {
-        const newValues = [...reservesOvers];
-        newValues[index] = value;
-        setReservesOvers(newValues);
-      } else {
-        const newValues = [...overs];
-        newValues[index] = value;
-        setOvers(newValues);
+      if (/^[0-9]{0,3}$/.test(value)) {
+        if (reserve) {
+          const newValues = [...reservesOvers];
+          newValues[index] = value;
+          setReservesOvers(newValues);
+          const { isValid, newErrors } = validateInputs(newValues);
+          setReserveErrors(newErrors);
+        } else {
+          const newValues = [...overs];
+          newValues[index] = value;
+          setOvers(newValues);
+          const { isValid, newErrors } = validateInputs(newValues);
+          setErrors(newErrors);
+        }
       }
     }
   };
+  
+
 
   const handleAddReserve = () => {
     if (reservesOvers.length < 7 && reservesUpgrades.length < 7) {
@@ -147,14 +171,16 @@ const App = () => {
 
   return (
     <GlobalContainer
-      overs={overs}
-      upgrades={upgrades}
-      reservesOvers={reservesOvers}
-      reservesUpgrades={reservesUpgrades}
-      setGer={setGer}
-      setGerReal={setGerReal}
-      setLoading={setLoading}
-      setErrors={setErrors}
+    overs={overs}
+    upgrades={upgrades}
+    reservesOvers={reservesOvers}
+    reservesUpgrades={reservesUpgrades}
+    setGer={setGer}
+    setGerReal={setGerReal}
+    setLoading={setLoading}
+    setErrors={setErrors}
+    setReserveErrors={setReserveErrors}
+    toastId={toastId.current}
     >
       <Container className="content-container">
         <ToastContainer />
@@ -207,7 +233,7 @@ const App = () => {
                   value={reserve}
                   onChange={(e) => handleInputChange(index, 'over', e.target.value, true)}
                   placeholder={`Sub ${index + 1}`}
-                  className="input-sm"
+                  className={`input-sm ${reserveErrors[index] ? 'is-invalid' : ''}`}
                   style={{ width: '120px', marginRight: '10px' }}
                 />
                 <input
@@ -222,7 +248,7 @@ const App = () => {
               </div>
             ))}
             <div className="text-center mb-4">
-              <Button className="button" onClick={() => handleCalculate(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, toastId)}
+              <Button className="button" onClick={() => handleCalculate(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, setReserveErrors, toastId)}
                 disabled={loading}>
                 {loading ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : 'Calculate'}
               </Button>

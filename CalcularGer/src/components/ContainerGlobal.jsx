@@ -7,8 +7,7 @@ import { FaLinkedin } from "react-icons/fa";
 import handleCalculate from '../services/HandleCalculate';
 import 'react-toastify/dist/ReactToastify.css';
 
-
-const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, toastId }) => {
+const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, setReserveErrors, toastId }) => {
   return (
     <div>
       <div className="global-container">
@@ -17,7 +16,7 @@ const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpg
       <div className='footer'>
         <div>
           <div className="col-l">
-            <a href='#calc' onClick={() => handleCalculate(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, toastId)}>
+            <a href='#calc' onClick={() => handleCalculate(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, setReserveErrors, toastId)}>
               <IoIosFootball className='logo'/>
             </a>
           </div>
