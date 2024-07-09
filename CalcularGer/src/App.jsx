@@ -21,11 +21,12 @@ const App = () => {
   const toastId = useRef(null);
   const [errors, setErrors] = useState(Array(11).fill(false));
   const [reserveErrors, setReserveErrors] = useState([]);
+  const API_URL = 'https://calcularger.onrender.com';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/retrieve');
+        const response = await axios.get(`${API_URL}/retrieve`);
         console.log('API Response:', response.data);
 
         if (response.data.overs.length > 0 && response.data.upgrades.length > 0) {
