@@ -24,7 +24,7 @@ const GlobalContainer = ({ children, overs, upgrades, reservesOvers, reservesUpg
             <a href="https://github.com/PedroHenriqueBRibeiro" target="_blank" rel="noopener noreferrer">
               <FaGithub className='icon'/>
             </a>
-            <a href="https://wa.me/5524992291058" target="_blank" rel="noopener noreferrer">
+            <a >
               <MdEmail className='icon'/>
             </a>
             <a href="https://www.linkedin.com/in/pedro-henrique-39aab8282" target="_blank" rel="noopener noreferrer">
