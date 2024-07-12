@@ -105,6 +105,24 @@ const App = () => {
     setReservesUpgrades(newReservesUpgrades);
   };
 
+  const handleCleanInputs = () => {
+    setOvers(Array(11).fill(''));
+    setUpgrades(Array(11).fill(''));
+    setReservesOvers([]);
+    setReservesUpgrades([]);
+  
+    setErrors(Array(11).fill(false));
+    setReserveErrors([]);
+    
+    setGer(null);
+    setGerReal(null);
+    
+    toast.warning("Cleaned.", {
+      position: "top-center"
+    });
+    
+  };  
+
   return (
     <GlobalContainer
       overs={overs}
@@ -130,7 +148,7 @@ const App = () => {
                 delay={{ show: 250, hide: 5000 }}
                 overlay={
                   <Tooltip id="button-tooltip" className="custom-tooltip">
-                    <span className="tip-text">Fill in these fields with the base overalls of each player in your starting team. For example: if your player has 98 overall and 3 ranks up, he has a 95 base overall.</span>
+                    <span className="tip-text">Fill in these fields with the base overalls of each player in your starting team. For example: if your player is 98 overall and 3 ranks up, he is a 95 base overall.</span>
                   </Tooltip>
                 }
               >
@@ -154,7 +172,7 @@ const App = () => {
                 delay={{ show: 250, hide: 5000 }}
                 overlay={
                   <Tooltip id="button-tooltip2" className="custom-tooltip">
-                    <span className="tip-text">Fill in these fields with the number of upgraded ranks from 0 to 5. For example: if your player has 100 overall and is at the maximum rank, he has 95 base overall and 5 upgraded rank.</span>
+                    <span className="tip-text">Fill in these fields with the number of upgraded ranks from 0 to 5. For example: if your player is 100 overall and at the maximum rank, he is a 95 base overall and 5 upgraded rank.</span>
                   </Tooltip>
                 }
               >
@@ -193,18 +211,23 @@ const App = () => {
                 <Button onClick={() => handleDeleteReserve(index)} className="btn-danger">X</Button>
               </div>
             ))}
-            <div className="text-center mb-4">
-              <Button className="button" onClick={() => handleCalculate(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, setReserveErrors, toastId)}
+            <div className="text-center">
+              <Button className="button text-center" onClick={() => handleCalculate(overs, upgrades, reservesOvers, reservesUpgrades, setGer, setGerReal, setLoading, setErrors, setReserveErrors, toastId)}
                 disabled={loading}>
                 {loading ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : 'Calculate'}
               </Button>
             </div>
             {ger !== null && (
-              <div className="text-center">
+              <div className="text-center mb-4">
                 <h2 ref={gerRef}>GER: {ger}</h2>
                 <h2>Real GER: {gerReal !== null ? gerReal.toFixed(4) : ''}</h2>
               </div>
             )}
+            <div className="text-center mb-4">
+            <Button className="button text-center" onClick={handleCleanInputs}>
+              Clean All
+            </Button>
+            </div>
           </div>
         </div>
       </Container>

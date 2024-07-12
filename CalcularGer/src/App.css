@@ -1,12 +1,12 @@
 .input-sm {
-  width: 100px;
+  width: 80px;
   padding: 1rem;
   background: linear-gradient(45deg,burlywood, yellow);
   border-radius: 10px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 900;
   color: black;
-  height: 50px;
+  height: 40px;
   border: 3px solid rgb(3, 22, 3);
 }
 
@@ -46,7 +46,6 @@
 
 .mt-4 {
   margin-top: 1.5rem;
-  
 }
 
 .vh-100 {
@@ -83,6 +82,8 @@
   border: 3px solid rgb(126, 38, 38) !important;
   font-weight: 600 !important;
   transition: background-color 0.3s, border-color 0.3s !important;
+  max-width: 25vh;
+  width: 100%;
 }
 
 .button:hover {
