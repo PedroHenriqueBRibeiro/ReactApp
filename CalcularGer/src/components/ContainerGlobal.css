@@ -4,13 +4,14 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    max-width: 200vh;
+    max-width: auto;
     height: 100%;
     padding: 20px;
     box-sizing: border-box;
     background: linear-gradient(90deg, #000000, rgb(39, 121, 39), #000000);
     padding-top: 50rem;
     padding-bottom: 50rem;
+    max-height: auto;
     
   }
   

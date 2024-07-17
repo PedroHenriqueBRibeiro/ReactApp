@@ -1,12 +1,12 @@
 .input-sm {
-  width: 80px;
+  width: 90px;
   padding: 1rem;
   background: linear-gradient(45deg,burlywood, yellow);
   border-radius: 10px;
   font-size: 1rem;
   font-weight: 900;
   color: black;
-  height: 40px;
+  height: 45px;
   border: 3px solid rgb(3, 22, 3);
 }
 
@@ -82,7 +82,7 @@
   border: 3px solid rgb(126, 38, 38) !important;
   font-weight: 600 !important;
   transition: background-color 0.3s, border-color 0.3s !important;
-  max-width: 25vh;
+  max-width: 230px;
   width: 100%;
 }
 
